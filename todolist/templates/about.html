@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+	.bs-example{
+    	margin: 100px;
+    }
+
+    .white{
+        background-color: whitesmoke
+    }
+    .blue{
+        background-color:rgb(32, 32, 197)
+    }
+    .red{
+        background-color:rgb(182, 41, 41)
+    }
+    .green{
+        background-color:rgb(22, 107, 22)
+    }
+    .yellow{
+        background-color:rgb(177, 177, 55)
+    }
+    .light-blue{
+        background-color: lightblue
+    }
+</style>
+<div class="dropdown" id="mydd">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+      Dropdown button
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+        <li>
+            <a class="dropdown-item" href="#" value="bg-primary">
+                <div class="p-3 mb-2 bg-primary text-white"></div>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#">
+                <div class="p-3 mb-2 bg-secondary text-white"></div>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#">
+                <div class="p-3 mb-2 bg-success text-white"></div>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#">
+                <div class="p-3 mb-2 bg-danger text-white"></div>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#">
+                <div class="p-3 mb-2 bg-warning text-dark"></div>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#">
+                <div class="p-3 mb-2 bg-info text-white"></div>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#">
+                <div class="p-3 mb-2 bg-light text-dark"></div>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#">
+                <div class="p-3 mb-2 bg-dark text-white"></div>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#">
+                <div class="p-3 mb-2 bg-white text-dark"></div>
+            </a>
+        </li>
+    </ul>
+  </div>
+
+<select class="form-control mb-2" id="color" name="color" placeholder="Pick a color">
+    <option style="color:white" value="white">&#9679; White</option>
+    <option style="color:blue" value="blue">&#9679; Blue</option>
+    <option style="color:red" value="red">&#9679; Red</option>
+    <option style="color:green" value="Green">&#9679; Green</option>
+    <option style="color:yellow" value="yellow">&#9679; Yellow</option>
+    <option style="color:lightblue " value="info">&#9679;Light Blue</option>
+</select>
+  <br>
+  <script>
+      var ddVal = document.getElementById('#color').value()
+      console.log("Drop down value is ", ddVal)
+  </script>
+{% endblock %}

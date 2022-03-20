@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+{% block content %}
+    <!-- New task input box here -->
+    <div class="content-section">
+        <form action="" method="post">
+            {{ taskForm.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4"><strong>{{ required_list.title }}</strong> 
+                </legend>
+                <div class="input-group mb-3">
+                    {{ taskForm.content(class="form-control",id="inputTaskTitle", placeholder="Enter new task here...")}}
+                    {{ taskForm.submit(class="btn btn-lg btn-primary")}}
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <!-- List of incomplete task here -->
+    <div class="content-section">
+        <h3>Tasks yet to finish</h3>
+        {% for openTask in openTasks %}
+            <div class="d-flex bd-highlight">
+                <div class="p-2 bd-highlight">
+                    <a class="mr-2" href="{{ url_for('change_TaskStatus_ToComplete',task_id = openTask.id) }}"><img class="article-icon" src="{{ url_for('static', filename='unchecked_checkbox.png') }}" alt="Unchecked checkbox"></a> 
+                </div>
+                <div class="p-2 flex-grow-1 bd-highlight">
+                    <span> {{ openTask.content.capitalize()  }}</span>            
+                </div>
+                <div class="p-2 bd-highlight">
+                    <a href="#" class="btn btn-sm m-1"><img class="rounded-circle article-icon" src="{{ url_for('static', filename='edit_icon.png') }}" alt="edit task"></a>
+                    <a href="{{  url_for('delete_task', task_id = openTask.id) }}" class="btn btn-sm m-1"><img class="rounded-circle article-icon" src="{{ url_for('static', filename='delete_icon.png') }}" alt="Delete task"></a>
+                </div>
+            </div>
+        {% endfor %}
+        {% if openTasks|length == 0 %}
+            <p class='text-muted'>No tasks added yet.
+            </p> 
+        {% else %}
+            <p class='text-muted'>
+                <br>
+                <!-- Todo - add undo all tasks at once     -->
+                <a class="article-title text-primary" href="{{ url_for('mark_all_tasks_complete', list_id = required_list.id) }}">* Mark all tasks as complete. <img class="article-icon" src="{{ url_for('static', filename='unchecked_checkbox.png') }}" alt="Un Checked checkbox"></a>
+            </p> 
+        {% endif %}
+    </div>
+
+    <!-- List of completed tasks here -->
+    <div class="content-section">
+        <h3>Completed Tasks</h3>
+        {% if completedTasksLists|length == 0 %}
+            <p class='text-muted'>No completed tasks yet.
+            </p>  
+        {% else %}     
+            <p class='text-muted'>All your completed tasks are shown here. Check info for more details.
+                <br>
+                <a class="article-title text-primary" href="{{ url_for('mark_all_tasks_incomplete', list_id = required_list.id) }}">*Mark all tasks as incomplete. <img class="article-icon" src="{{ url_for('static', filename='unchecked_checkbox.png') }}" alt="Un Checked checkbox"> </a>
+            </p>        
+
+            {% for completedTasksList in completedTasksLists %}
+                <article class="media content-section">
+                    <div class="media-body">
+                        <div class="article-metadata">
+                            <a class="mr-2 article-title" href="#">{{ completedTasksList.date }}</a>
+                        </div>
+                    </div>
+                    {% for completedTask in completedTasksList.tasks %}
+                    {% include 'includes/info-modal.html' %}
+                    <div class="d-flex bd-highlight">
+                        <div class="p-2 bd-highlight">
+                            <a href="{{ url_for('change_TaskStatus_ToNotComplete', completedTask_id = completedTask.id)}}"><img class="article-icon" src="{{ url_for('static', filename='checked_checkbox.png') }}" alt="Checked checkbox"></a> 
+                        </div>
+                        <div class="p-2 flex-grow-1 bd-highlight">
+                            <span> {{ completedTask.content.capitalize()  }}</span>            
+                        </div>
+                        <div class="p-2 bd-highlight">
+                            <button class="btn btn-sm mt-1 mb-1" data-bs-toggle="modal" data-bs-target="#infoModal-{{ completedTask.id }}"><img class="rounded-circle article-icon" src="{{ url_for('static', filename='info_icon.png') }}" alt="Delete task"></button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </article>
+            {% endfor %} 
+        {% endif %}
+    </div>
+{% endblock %}
+
+<!-- Update list details -->
+{% block sideContent %}
+    <div class="col-md-4">
+        <div class="content-section">
+            <form action="{{url_for('update_list', list_id = required_list.id)}}" method="post">
+                {{ listForm.hidden_tag() }}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4"><strong>List Details.</strong> 
+                    </legend>
+                    <div class="form-group">
+                        {{ listForm.title.label(class="form-control-label") }}
+                        {% if listForm.title.errors %}
+                            {{ listForm.title(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in listForm.title.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ listForm.title(class="form-control form-control-lg mb-2") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ listForm.description.label(class="form-control-label") }}
+                        {% if listForm.description.errors %}
+                            {{ listForm.description(class="form-control form-control-lg is-invalid ") }}
+                            <div class="invalid-feedback">
+                                {% for error in listForm.description.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ listForm.description(class="form-control form-control-lg mb-2") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ listForm.color.label(class="form-check-label")}}
+                        <select class="form-control mb-2" id="color" name="color" placeholder="Pick a color">
+                            {% for color in colorOptions %}
+                            <option style="color:{{color.value}}" value="{{color.value}}"><strong>&#9679; {{color.id.capitalize()}}</strong></option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-check">
+                        {{ listForm.is_important(class="form-check-input") }}
+                        {{ listForm.is_important.label(class="form-check-label")}}
+                    </div>
+                </fieldset>
+                <div class="form-group">
+                    {{ listForm.submit(class="btn btn-primary mt-3")}}
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- To bring the focus on the input box, as soon as page loads -->
+    <script>
+        window.onload = function() {
+            document.getElementById("inputTaskTitle").focus();
+        };
+    </script>
+{% endblock %}

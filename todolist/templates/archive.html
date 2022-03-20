@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for list in archived_list %}
+        <div class="col">
+            <div class="card text-dark bg-{{list.color}}" id="{{ list.id }}">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <div class="d-flex flex-column bd-highlight">
+                            <div class="p-2 flex-grow-1 bd-highlight">
+                                <a class="article-title" href="{{url_for('get_list_by_id', list_id = list.id)}}">{{list.title.capitalize() }}</a>        
+                            </div>
+                            <div class="p-2 bd-highlight">
+                                <a href="{{url_for('delete_list', list_id = list.id)}}" class="btn btn-sm"><img class="rounded-circle article-icon" src="{{ url_for('static', filename='delete_icon.png') }}" alt="Delete list"></a>
+                                <a href="{{ url_for('un_archive_list', list_id = list.id ) }}" class="btn btn-sm"><img class="rounded-circle article-icon" src="{{ url_for('static', filename='unarchive_icon.png') }}" alt="Archive list"></a>  
+                            </div>
+                        </div>
+                    </h5>
+                    <hr>
+                    <p class="card-text">
+                        {{ list.description }}
+                    </p>
+                </div>
+            </div>
+        </div>                
+    {% endfor %}
+</div>
+{% endblock %}

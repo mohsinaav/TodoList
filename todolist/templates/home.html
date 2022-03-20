@@ -1,0 +1,126 @@
+<!-- {% extends "layout.html" %} -->
+{% block content %}
+    <!-- Add new collection here -->
+    <form action="{{ url_for('home_page') }}" method="post">
+        {{ searchTaskForm.hidden_tag() }}
+        <fieldset class="form-group">
+            <div class="input-group mb-3">
+                {{ searchTaskForm.searchText(class="form-control", placeholder="Enter search keyword here...")}}
+                {{ searchTaskForm.submit(class="btn btn-lg btn-primary")}}
+            </div>
+        </fieldset>
+    </form>
+    <!-- Grid cards -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for list in openLists %}
+            <div class="col">
+                <div class="card text-dark" style="background-color: {{ list.color }} !important;" id="{{ list.id }} ">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="d-flex flex bd-highlight">
+                                <div class="p-2 flex-grow-1 bd-highlight">
+                                    <a class="article-title" href="{{url_for('get_list_by_id', list_id = list.id)}}">{{list.title.capitalize() }}</a> 
+                                </div>
+                                <div class="p-2 bd-highlight">   
+                                    <!-- popover section here     -->
+                                    <a href="#" id="myPopover-{{list.id}}" class="btn" tabindex="0" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-content="Here's some amazing content."><img class="rounded-circle article-icon" src="{{ url_for('static', filename='options_icon.png') }}" alt="Options task"></a>
+                                    <script>    
+                                        document.addEventListener("DOMContentLoaded", function(){
+                                            var element = document.getElementById("myPopover-{{list.id}}");
+                                            // Enable popovers everywhere
+                                            var popover = new bootstrap.Popover(element, {
+                                            content: '<a href="{{url_for("get_list_by_id", list_id = list.id)}}" class="btn btn-sm m-1"><img class="rounded-circle article-icon" src="{{ url_for("static", filename="edit_icon.png") }}" alt="edit task"></a><br><a href="{{url_for("delete_list", list_id = list.id)}}" class="btn btn-sm m-1"><img class="rounded-circle article-icon" src="{{ url_for("static", filename="delete_icon.png") }}" alt="Delete task"></a><br><a href="{{ url_for("archive_list", list_id = list.id ) }}" class="btn btn-sm m-1"><img class="rounded-circle article-icon" src="{{ url_for("static", filename="archive_icon.png") }}" alt="Archive task"></a><br>{% if list.is_important == 1 %}<a href="{{ url_for("mark_important", list_id = list.id) }}" class="btn btn-sm"><img class="rounded-circle article-icon" src="{{ url_for("static", filename="off_pinned_icon.png") }}" alt="Important list"></a>{% else %}<a href="{{ url_for("mark_important", list_id = list.id) }}" class="btn btn-sm"><img class="rounded-circle article-icon" src="{{ url_for("static", filename="pinned_icon.png") }}" alt="Important list"></a>{% endif %}',
+                                            html: true
+                                            });
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </h5>
+                        <hr>
+                        <p class="card-text">
+                            {{ list.description }}
+                        </p>
+                    </div>
+                </div>
+            </div>                
+        {% endfor %}
+        <!-- Add new cards here -->
+        <div class="col">
+            <div class="card text-dark bg-light" id="">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <div class="d-flex flex-column bd-highlight">
+                            <div class="p-2 bd-highlight">
+                                {% include 'includes/addList-modal.html' %}
+                                <button class="btn mt-1 mb-1 btn-lg" onclick="getFocus()"><img class="rounded-circle" style="height:50px;width:50px;" src="{{ url_for('static', filename='plus_icon.png') }}" alt="Edit list"></button>
+                            </div>
+                        </div>
+                    </h5>
+                </div>
+            </div>
+        </div> 
+    </div>
+{% endblock %}
+<!-- Update list details -->
+{% block sideContent %}
+    <div class="col-md-4">
+        <div class="content-section">
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4"><strong>Add new list here.</strong> 
+                    </legend>
+                    <div class="form-group">
+                        {{ form.title.label(class="form-control-label") }}
+                        {% if form.title.errors %}
+                            {{ form.title(class="form-control form-control-lg is-invalid", id="inputTitle") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.title.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.title(class="form-control form-control-lg mb-2", id="inputTitle") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.description.label(class="form-control-label") }}
+                        {% if form.description.errors %}
+                            {{ form.description(class="form-control form-control-lg is-invalid ") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.description.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.description(class="form-control form-control-lg mb-2") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.color.label(class="form-check-label")}}
+                        <select class="form-control mb-2" id="color" name="color" placeholder="Pick a color">
+                            {% for color in colorOptions %}
+                            <option style="color:{{color.value}}" value="{{color.value}}"><strong>&#9679; {{color.id.capitalize()}}</strong></option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-check">
+                        {{ form.is_important(class="form-check-input") }}
+                        {{ form.is_important.label(class="form-check-label")}}
+                    </div>
+                </fieldset>
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-primary mt-3")}}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- To bring the focus on the input box, as soon as + button is clicked -->
+<script>    
+    function getFocus(){
+        document.getElementById("inputTitle").focus();
+    }
+</script>
+{% endblock %}
